@@ -14,6 +14,7 @@ export function storyRowToProject(storyRow, pointRows = []) {
     title: storyRow.title ?? '',
     genre: storyRow.genre ?? '',
     logline: storyRow.logline ?? '',
+    storyline: storyRow.storyline ?? '',
     theme: storyRow.theme ?? '',
     points,
     createdAt: storyRow.created_at,
@@ -26,6 +27,7 @@ export function projectToStoryInsert(project) {
     title: project.title,
     genre: project.genre,
     logline: project.logline,
+    storyline: project.storyline,
     theme: project.theme,
   }
 }

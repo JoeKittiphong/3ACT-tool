@@ -1,0 +1,26 @@
+:root {
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  color: #f5efe6;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 169, 64, 0.2) 0 9%, transparent 9.4%),
+    radial-gradient(circle at 88% 14%, rgba(83, 163, 255, 0.16) 0 7%, transparent 7.4%),
+    radial-gradient(circle at 90% 82%, rgba(255, 111, 60, 0.18) 0 8%, transparent 8.4%),
+    linear-gradient(180deg, #111318 0%, #1a1f27 100%);
+  line-height: 1.45;
+  font-weight: 500;
+  color-scheme: dark;
+  --bg: #111318;
+  --surface: #1b212b;
+  --surface-alt: #232a35;
+  --ink: #f5efe6;
+  --line: #0b0d12;
+  --yellow: #f7b843;
+  --orange: #ff8d4d;
+  --pink: #ff7aa2;
+  --blue: #66c7ff;
+  --green: #9be15d;
+  --shadow: 6px 6px 0 #0b0d12;
+  --shadow-small: 4px 4px 0 #0b0d12;
+  --radius: 22px;
+  --mobile-bottom-bar-height: 152px;
+}

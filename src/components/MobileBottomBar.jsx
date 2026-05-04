@@ -7,6 +7,7 @@ export function MobileBottomBar({
   syncStatus,
   isCloudMode,
   onOpenOutline,
+  onOpenStoryline,
   onOpenSettings,
   onOpenLibrary,
   onOpenReader,
@@ -26,7 +27,11 @@ export function MobileBottomBar({
           {isCloudMode ? syncLabelMap[syncStatus] ?? 'Syncing' : 'Local mode'}
         </span>
         {isCloudMode ? (
-          <Button variant="secondary" className="mobile-bottom-button mobile-signout-button" onClick={onSignOut}>
+          <Button
+            variant="secondary"
+            className="mobile-bottom-button mobile-signout-button"
+            onClick={onSignOut}
+          >
             Sign out
           </Button>
         ) : null}
@@ -40,6 +45,9 @@ export function MobileBottomBar({
       <div className="mobile-bottom-actions">
         <Button variant="secondary" className="mobile-bottom-button" onClick={onOpenOutline}>
           Points
+        </Button>
+        <Button variant="secondary" className="mobile-bottom-button" onClick={onOpenStoryline}>
+          Plot
         </Button>
         <Button variant="secondary" className="mobile-bottom-button" onClick={onOpenSettings}>
           ตั้งค่า

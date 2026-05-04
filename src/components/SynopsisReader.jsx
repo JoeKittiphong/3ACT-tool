@@ -4,7 +4,7 @@ import { PageHeader } from './ui/PageHeader.jsx'
 export function SynopsisReader({ synopsis, completedCount, onBack, onCopy }) {
   return (
     <div className="reader-shell">
-      <div className="reader-card">
+      <div className="reader-card synopsis-reader-card">
         <PageHeader
           eyebrow="Synopsis Reader"
           title="เรื่องย่อรวม"

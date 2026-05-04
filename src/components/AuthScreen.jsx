@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { authText } from '../constants/authText'
 import { Button } from './ui/Button.jsx'
 import { Card } from './ui/Card.jsx'
 import { PageHeader } from './ui/PageHeader.jsx'
@@ -8,19 +9,22 @@ export function AuthScreen({ onSubmit, onResetPassword, loading, errorMessage, i
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const isSubmitDisabled = loading || !email.trim() || !password.trim()
+  const isResetDisabled = loading || !email.trim()
+
   const handleSubmit = async (event) => {
     event.preventDefault()
-    if (!email.trim() || !password.trim()) return
+    if (isSubmitDisabled) return
     await onSubmit(email.trim(), password)
   }
 
   return (
     <div className="reader-shell">
-      <Card className="reader-card auth-card">
+      <Card className="panel-card auth-card">
         <PageHeader
           eyebrow="Supabase Sync"
-          title="เข้าสู่ระบบเพื่อซิงก์"
-          description="ใช้ email เดียวกันบนมือถือและ desktop เพื่อเขียนต่อข้ามอุปกรณ์"
+          title={authText.title}
+          description={authText.description}
         />
 
         <form className="auth-form" onSubmit={handleSubmit}>
@@ -36,22 +40,27 @@ export function AuthScreen({ onSubmit, onResetPassword, loading, errorMessage, i
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            placeholder="รหัสผ่าน (ขั้นต่ำ 6 ตัวอักษร)"
+            placeholder={authText.passwordPlaceholder}
           />
           {infoMessage ? <p className="auth-message">{infoMessage}</p> : null}
           {errorMessage ? <p className="auth-message error">{errorMessage}</p> : null}
-          <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
-            <Button style={{ flex: 1 }} variant="primary" type="submit" disabled={loading || !email.trim() || !password.trim()}>
-              {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ / สมัครสมาชิก'}
-            </Button>
-            <Button 
-              style={{ flex: 1 }}
-              variant="secondary" 
-              type="button" 
-              onClick={() => onResetPassword(email.trim())} 
-              disabled={loading || !email.trim()}
+          <div className="auth-actions">
+            <Button
+              className="auth-action-button"
+              variant="primary"
+              type="submit"
+              disabled={isSubmitDisabled}
             >
-              ลืมรหัสผ่าน? (ส่งลิงก์รีเซ็ต)
+              {loading ? authText.submitLoadingLabel : authText.submitLabel}
+            </Button>
+            <Button
+              className="auth-action-button"
+              variant="secondary"
+              type="button"
+              onClick={() => onResetPassword(email.trim())}
+              disabled={isResetDisabled}
+            >
+              {authText.resetPasswordLabel}
             </Button>
           </div>
         </form>

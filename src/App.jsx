@@ -1,13 +1,15 @@
-import { useState } from 'react'
 import { AuthScreen } from './components/AuthScreen.jsx'
 import { EditorWorkspace } from './components/EditorWorkspace.jsx'
 import { MobileOutlineDrawer } from './components/MobileOutlineDrawer.jsx'
 import { SettingsModal } from './components/SettingsModal.jsx'
 import { StoryLibrary } from './components/StoryLibrary.jsx'
+import { StorylineWorkspace } from './components/StorylineWorkspace.jsx'
 import { SynopsisReader } from './components/SynopsisReader.jsx'
 import { ConfirmDialog } from './components/ui/ConfirmDialog.jsx'
+import { useAuthFlow } from './hooks/useAuthFlow.js'
 import { useStoryProjects } from './hooks/useStoryProjects.js'
 import { useSupabaseAuth } from './hooks/useSupabaseAuth.js'
+import { useWorkspaceViewState } from './hooks/useWorkspaceViewState.js'
 import { storyFramework } from './storyFramework'
 
 function App() {
@@ -19,6 +21,11 @@ function App() {
     signOut,
     resetPassword,
   } = useSupabaseAuth()
+
+  const { authMessage, authError, handleEmailSignIn, handleResetPassword } = useAuthFlow({
+    signInWithEmail,
+    resetPassword,
+  })
 
   const {
     projects,
@@ -40,81 +47,44 @@ function App() {
     syncEnabled: isConfigured,
   })
 
-  const [selectedPointId, setSelectedPointId] = useState(storyFramework[0].id)
-  const [isOutlineOpen, setIsOutlineOpen] = useState(false)
-  const [isReaderOpen, setIsReaderOpen] = useState(false)
-  const [isLibraryOpen, setIsLibraryOpen] = useState(false)
-  const [touchStart, setTouchStart] = useState(null)
-  const [pendingDeleteProjectId, setPendingDeleteProjectId] = useState(null)
-  const [authMessage, setAuthMessage] = useState('')
-  const [authError, setAuthError] = useState('')
-
-  const selectedPoint =
-    storyFramework.find((point) => point.id === selectedPointId) ?? storyFramework[0]
-  const selectedPointIndex = storyFramework.findIndex((point) => point.id === selectedPoint.id)
-  const previousPoint = selectedPointIndex > 0 ? storyFramework[selectedPointIndex - 1] : null
-  const nextPoint =
-    selectedPointIndex < storyFramework.length - 1 ? storyFramework[selectedPointIndex + 1] : null
-
-  const resetNavigation = () => {
-    setSelectedPointId(storyFramework[0].id)
-    setIsLibraryOpen(false)
-    setIsReaderOpen(false)
-    setIsOutlineOpen(false)
-  }
+  const {
+    activeView,
+    isOutlineOpen,
+    selectedPointId,
+    selectedPoint,
+    pendingDeleteProjectId,
+    selectPoint,
+    resetWorkspaceView,
+    openLibrary,
+    closeLibrary,
+    openReader,
+    closeReader,
+    openStoryline,
+    closeStoryline,
+    openOutline,
+    closeOutline,
+    requestDeleteStory,
+    clearPendingDeleteStory,
+    handleTouchStart,
+    handleTouchEnd,
+  } = useWorkspaceViewState(storyFramework)
 
   const openNewStory = () => {
     createAndOpenNewStory()
-    resetNavigation()
-    setPendingDeleteProjectId(null)
+    resetWorkspaceView()
+    clearPendingDeleteStory()
   }
 
   const openExistingStory = (projectId) => {
     openStory(projectId)
-    resetNavigation()
-    setPendingDeleteProjectId(null)
-  }
-
-  const requestDeleteStory = (projectId) => {
-    setPendingDeleteProjectId(projectId)
+    resetWorkspaceView()
+    clearPendingDeleteStory()
   }
 
   const confirmDeleteStory = () => {
     if (!pendingDeleteProjectId) return
-
     deleteStory(pendingDeleteProjectId)
-    setPendingDeleteProjectId(null)
-  }
-
-  const closeLibrary = () => {
-    setIsLibraryOpen(false)
-    setPendingDeleteProjectId(null)
-  }
-
-  const handleEmailSignIn = async (email, password) => {
-    setAuthError('')
-    setAuthMessage('')
-
-    try {
-      const { error } = await signInWithEmail(email, password)
-      if (error) throw error
-    } catch (error) {
-      console.error('Auth failed', error)
-      setAuthError(error.message || 'เข้าสู่ระบบไม่สำเร็จ')
-    }
-  }
-
-  const handleResetPassword = async (email) => {
-    setAuthError('')
-    setAuthMessage('')
-    try {
-      const { error } = await resetPassword(email)
-      if (error) throw error
-      setAuthMessage('ส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลของคุณแล้ว (โปรดเช็กกล่องจดหมาย หรือ Junk/Spam)')
-    } catch (error) {
-      console.error('Password reset failed', error)
-      setAuthError(error.message || 'ส่งลิงก์ไม่สำเร็จ กรุณาลองใหม่')
-    }
+    clearPendingDeleteStory()
   }
 
   const copySynopsis = async () => {
@@ -126,36 +96,6 @@ function App() {
     } catch (error) {
       console.error('Failed to copy synopsis', error)
       window.alert('คัดลอกไม่สำเร็จ')
-    }
-  }
-
-  const handleTouchStart = (event) => {
-    const touch = event.changedTouches[0]
-    setTouchStart({
-      x: touch.clientX,
-      y: touch.clientY,
-    })
-  }
-
-  const handleTouchEnd = (event) => {
-    if (!touchStart) return
-
-    const touch = event.changedTouches[0]
-    const deltaX = touch.clientX - touchStart.x
-    const deltaY = touch.clientY - touchStart.y
-
-    setTouchStart(null)
-
-    if (Math.abs(deltaX) < 60 || Math.abs(deltaX) < Math.abs(deltaY)) {
-      return
-    }
-
-    if (deltaX < 0 && nextPoint) {
-      setSelectedPointId(nextPoint.id)
-    }
-
-    if (deltaX > 0 && previousPoint) {
-      setSelectedPointId(previousPoint.id)
     }
   }
 
@@ -179,7 +119,7 @@ function App() {
     return null
   }
 
-  if (isLibraryOpen) {
+  if (activeView === 'library') {
     return (
       <>
         <StoryLibrary
@@ -197,19 +137,29 @@ function App() {
           confirmLabel="ลบเรื่อง"
           cancelLabel="ยกเลิก"
           onConfirm={confirmDeleteStory}
-          onCancel={() => setPendingDeleteProjectId(null)}
+          onCancel={clearPendingDeleteStory}
         />
       </>
     )
   }
 
-  if (isReaderOpen) {
+  if (activeView === 'reader') {
     return (
       <SynopsisReader
         synopsis={synopsis}
         completedCount={completedCount}
-        onBack={() => setIsReaderOpen(false)}
+        onBack={closeReader}
         onCopy={copySynopsis}
+      />
+    )
+  }
+
+  if (activeView === 'storyline') {
+    return (
+      <StorylineWorkspace
+        project={currentProject}
+        onBack={closeStoryline}
+        onChange={(value) => updateProjectField('storyline', value)}
       />
     )
   }
@@ -229,10 +179,10 @@ function App() {
         selectedPointId={selectedPointId}
         project={currentProject}
         completedCount={completedCount}
-        onClose={() => setIsOutlineOpen(false)}
+        onClose={closeOutline}
         onSelectPoint={(pointId) => {
-          setSelectedPointId(pointId)
-          setIsOutlineOpen(false)
+          selectPoint(pointId)
+          closeOutline()
         }}
       />
 
@@ -247,11 +197,12 @@ function App() {
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onPointContentChange={updatePointContent}
-        onSelectPoint={setSelectedPointId}
+        onSelectPoint={selectPoint}
         onOpenSettings={() => setShouldOpenSettings(true)}
-        onOpenLibrary={() => setIsLibraryOpen(true)}
-        onOpenReader={() => setIsReaderOpen(true)}
-        onOpenOutline={() => setIsOutlineOpen(true)}
+        onOpenStoryline={openStoryline}
+        onOpenLibrary={openLibrary}
+        onOpenReader={openReader}
+        onOpenOutline={openOutline}
         onSignOut={signOut}
       />
     </>

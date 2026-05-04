@@ -7,6 +7,7 @@ create table if not exists public.stories (
   genre text not null default '',
   theme text not null default '',
   logline text not null default '',
+  storyline text not null default '',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

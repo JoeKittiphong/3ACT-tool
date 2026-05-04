@@ -13,6 +13,7 @@ export const createProject = () => {
     title: '',
     genre: '',
     logline: '',
+    storyline: '',
     theme: '',
     points: createEmptyPoints(),
     createdAt: timestamp,
@@ -23,7 +24,7 @@ export const createProject = () => {
 export const hasProjectContent = (project) => {
   if (!project) return false
 
-  const fields = [project.title, project.genre, project.logline, project.theme]
+  const fields = [project.title, project.genre, project.logline, project.storyline, project.theme]
   const hasFieldContent = fields.some((value) => (value ?? '').trim().length > 0)
   const hasPointContent = Object.values(project.points ?? {}).some(
     (value) => (value ?? '').trim().length > 0,

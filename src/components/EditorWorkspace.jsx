@@ -18,6 +18,7 @@ export function EditorWorkspace({
   onPointContentChange,
   onSelectPoint,
   onOpenSettings,
+  onOpenStoryline,
   onOpenLibrary,
   onOpenReader,
   onOpenOutline,
@@ -52,6 +53,9 @@ export function EditorWorkspace({
                 </Badge>
                 <Button variant="secondary" onClick={onOpenSettings}>
                   ตั้งค่าเรื่อง
+                </Button>
+                <Button variant="secondary" onClick={onOpenStoryline}>
+                  Storyline
                 </Button>
                 <Button variant="secondary" onClick={onOpenLibrary}>
                   เรื่องทั้งหมด
@@ -108,7 +112,7 @@ export function EditorWorkspace({
               />
               <div className="editor-footer">
                 <span className="char-count">
-                  ความยาว: {(project.points[selectedPoint.id] ?? '').length} ตัวอักษร 
+                  ความยาว: {(project.points[selectedPoint.id] ?? '').length} ตัวอักษร
                   <span className="char-recommend"> (แนะนำประมาณ 150-300 ตัวอักษร)</span>
                 </span>
               </div>
@@ -130,7 +134,7 @@ export function EditorWorkspace({
                 </Button>
               </div>
               <pre className="synopsis-output">
-                {synopsis || 'เมื่อเริ่มกรอกข้อมูลในแต่ละ point ระบบจะรวมรวมเป็นเรื่องย่อให้ตรงนี้'}
+                {synopsis || 'เมื่อเริ่มกรอกข้อมูลในแต่ละ point ระบบจะรวมเป็นเรื่องย่อให้ตรงนี้'}
               </pre>
             </Card>
           </aside>
@@ -144,6 +148,7 @@ export function EditorWorkspace({
         syncStatus={syncStatus}
         isCloudMode={isCloudMode}
         onOpenOutline={onOpenOutline}
+        onOpenStoryline={onOpenStoryline}
         onOpenSettings={onOpenSettings}
         onOpenLibrary={onOpenLibrary}
         onOpenReader={onOpenReader}
