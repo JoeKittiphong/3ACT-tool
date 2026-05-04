@@ -150,6 +150,10 @@ button {
   transition: transform 140ms ease, box-shadow 140ms ease;
 }
 
+.ui-button {
+  appearance: none;
+}
+
 .primary-button,
 .secondary-button {
   padding: 11px 16px;
@@ -218,6 +222,10 @@ button {
   background: var(--yellow);
   color: #1b1712;
   box-shadow: 3px 3px 0 #0b0d12;
+}
+
+.ui-badge {
+  display: inline-flex;
 }
 
 .chip {
@@ -375,6 +383,10 @@ button {
   background: linear-gradient(180deg, #fffef8 0%, #ffeec7 100%);
 }
 
+.ui-card {
+  display: block;
+}
+
 .library-card {
   min-height: 70vh;
 }
@@ -478,6 +490,15 @@ button {
 
 .desktop-modal-actions {
   margin-top: 20px;
+}
+
+.confirm-body {
+  min-height: 24px;
+}
+
+.confirm-copy {
+  margin: 0;
+  color: #d2c7b9;
 }
 
 .mobile-drawer-backdrop {

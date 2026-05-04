@@ -1,22 +1,25 @@
+import { Button } from './ui/Button.jsx'
+import { PageHeader } from './ui/PageHeader.jsx'
+
 export function SynopsisReader({ synopsis, completedCount, onBack, onCopy }) {
   return (
     <div className="reader-shell">
       <div className="reader-card">
-        <div className="reader-header">
-          <div>
-            <p className="eyebrow">Synopsis Reader</p>
-            <h1>เรื่องย่อรวม</h1>
-            <p className="reader-meta">{completedCount} sections ready</p>
-          </div>
-          <div className="reader-actions">
-            <button className="secondary-button" type="button" onClick={onBack}>
-              กลับไปเขียน
-            </button>
-            <button className="primary-button" type="button" onClick={onCopy}>
-              คัดลอก
-            </button>
-          </div>
-        </div>
+        <PageHeader
+          eyebrow="Synopsis Reader"
+          title="เรื่องย่อรวม"
+          description={`${completedCount} sections ready`}
+          actions={
+            <>
+              <Button variant="secondary" onClick={onBack}>
+                กลับไปเขียน
+              </Button>
+              <Button variant="primary" onClick={onCopy}>
+                คัดลอก
+              </Button>
+            </>
+          }
+        />
         <pre className="reader-output">
           {synopsis || 'ยังไม่มีเนื้อหาสำหรับรวมเป็นเรื่องย่อ'}
         </pre>

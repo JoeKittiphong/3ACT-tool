@@ -1,3 +1,4 @@
+import { Button } from './ui/Button.jsx'
 import { OutlineContent } from './OutlineContent.jsx'
 
 export function MobileOutlineDrawer({
@@ -24,9 +25,9 @@ export function MobileOutlineDrawer({
             <p className="eyebrow">Story Outline</p>
             <h2 id="story-outline-title">เลือก point</h2>
           </div>
-          <button className="secondary-button modal-close" type="button" onClick={onClose}>
+          <Button variant="secondary" className="modal-close" onClick={onClose}>
             ปิด
-          </button>
+          </Button>
         </div>
         <div className="outline-scroll">
           <OutlineContent

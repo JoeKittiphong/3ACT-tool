@@ -1,3 +1,5 @@
+import { Button } from './ui/Button.jsx'
+
 export function MobileBottomBar({
   selectedPoint,
   completedCount,
@@ -16,18 +18,18 @@ export function MobileBottomBar({
         </span>
       </div>
       <div className="mobile-bottom-actions">
-        <button className="secondary-button mobile-bottom-button" type="button" onClick={onOpenOutline}>
+        <Button variant="secondary" className="mobile-bottom-button" onClick={onOpenOutline}>
           Points
-        </button>
-        <button className="secondary-button mobile-bottom-button" type="button" onClick={onOpenSettings}>
+        </Button>
+        <Button variant="secondary" className="mobile-bottom-button" onClick={onOpenSettings}>
           ตั้งค่า
-        </button>
-        <button className="secondary-button mobile-bottom-button" type="button" onClick={onOpenLibrary}>
+        </Button>
+        <Button variant="secondary" className="mobile-bottom-button" onClick={onOpenLibrary}>
           เรื่อง
-        </button>
-        <button className="primary-button mobile-bottom-button" type="button" onClick={onOpenReader}>
+        </Button>
+        <Button variant="primary" className="mobile-bottom-button" onClick={onOpenReader}>
           อ่าน
-        </button>
+        </Button>
       </div>
     </div>
   )
