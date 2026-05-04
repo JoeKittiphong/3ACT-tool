@@ -4,7 +4,7 @@ export function MobileBottomBar({
   totalPoints,
   onOpenOutline,
   onOpenSettings,
-  onCreateNew,
+  onOpenLibrary,
   onOpenReader,
 }) {
   return (
@@ -22,8 +22,8 @@ export function MobileBottomBar({
         <button className="secondary-button mobile-bottom-button" type="button" onClick={onOpenSettings}>
           ตั้งค่า
         </button>
-        <button className="secondary-button mobile-bottom-button" type="button" onClick={onCreateNew}>
-          ใหม่
+        <button className="secondary-button mobile-bottom-button" type="button" onClick={onOpenLibrary}>
+          เรื่อง
         </button>
         <button className="primary-button mobile-bottom-button" type="button" onClick={onOpenReader}>
           อ่าน

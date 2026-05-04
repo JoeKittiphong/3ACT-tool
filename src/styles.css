@@ -1,26 +1,26 @@
 :root {
   font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-  color: #1f1a17;
+  color: #f5efe6;
   background:
-    radial-gradient(circle at 12% 18%, rgba(255, 207, 87, 0.95) 0 9%, transparent 9.4%),
-    radial-gradient(circle at 88% 14%, rgba(151, 218, 255, 0.9) 0 7%, transparent 7.4%),
-    radial-gradient(circle at 90% 82%, rgba(255, 165, 123, 0.92) 0 8%, transparent 8.4%),
-    linear-gradient(180deg, #fff9eb 0%, #ffe9c8 100%);
+    radial-gradient(circle at 12% 18%, rgba(255, 169, 64, 0.2) 0 9%, transparent 9.4%),
+    radial-gradient(circle at 88% 14%, rgba(83, 163, 255, 0.16) 0 7%, transparent 7.4%),
+    radial-gradient(circle at 90% 82%, rgba(255, 111, 60, 0.18) 0 8%, transparent 8.4%),
+    linear-gradient(180deg, #111318 0%, #1a1f27 100%);
   line-height: 1.45;
   font-weight: 500;
-  color-scheme: light;
-  --bg: #fff6e6;
-  --surface: #fffdf6;
-  --surface-alt: #fff1d6;
-  --ink: #1f1a17;
-  --line: #1f1a17;
-  --yellow: #ffd54f;
-  --orange: #ff9e57;
-  --pink: #ff8fb3;
-  --blue: #8dd8ff;
-  --green: #c9ef73;
-  --shadow: 6px 6px 0 #1f1a17;
-  --shadow-small: 4px 4px 0 #1f1a17;
+  color-scheme: dark;
+  --bg: #111318;
+  --surface: #1b212b;
+  --surface-alt: #232a35;
+  --ink: #f5efe6;
+  --line: #0b0d12;
+  --yellow: #f7b843;
+  --orange: #ff8d4d;
+  --pink: #ff7aa2;
+  --blue: #66c7ff;
+  --green: #9be15d;
+  --shadow: 6px 6px 0 #0b0d12;
+  --shadow-small: 4px 4px 0 #0b0d12;
   --radius: 22px;
 }
 
@@ -62,7 +62,7 @@ button {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: radial-gradient(rgba(31, 26, 23, 0.12) 1.1px, transparent 1.1px);
+  background-image: radial-gradient(rgba(245, 239, 230, 0.08) 1.1px, transparent 1.1px);
   background-size: 18px 18px;
   opacity: 0.5;
 }
@@ -87,7 +87,7 @@ button {
   gap: 18px;
   padding: 18px 22px;
   margin-bottom: 18px;
-  background: linear-gradient(180deg, #fffef9 0%, #fff0be 100%);
+  background: linear-gradient(180deg, #202734 0%, #171b23 100%);
 }
 
 .eyebrow,
@@ -97,7 +97,7 @@ button {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 0.74rem;
-  color: #7b4e14;
+  color: #f0b45e;
   font-weight: 900;
 }
 
@@ -126,7 +126,7 @@ button {
 .modal-copy,
 .preview-meta,
 .point-text small {
-  color: #61544a;
+  color: #b7ab9c;
 }
 
 .hero-status,
@@ -165,7 +165,7 @@ button {
 }
 
 .secondary-button {
-  background: #fffdf6;
+  background: #2b3340;
   color: var(--ink);
 }
 
@@ -173,7 +173,7 @@ button {
 .secondary-button:hover,
 .point-item:hover {
   transform: translate(-1px, -1px);
-  box-shadow: 7px 7px 0 #1f1a17;
+  box-shadow: 7px 7px 0 #0b0d12;
 }
 
 .primary-button:disabled,
@@ -216,7 +216,8 @@ button {
   font-size: 0.82rem;
   font-weight: 800;
   background: var(--yellow);
-  box-shadow: 3px 3px 0 #1f1a17;
+  color: #1b1712;
+  box-shadow: 3px 3px 0 #0b0d12;
 }
 
 .chip {
@@ -247,7 +248,7 @@ button {
   text-align: left;
   padding: 12px;
   border-radius: 18px;
-  background: #fffef8;
+  background: #262e3a;
   color: inherit;
   display: flex;
   gap: 12px;
@@ -256,7 +257,7 @@ button {
 }
 
 .point-item.active {
-  background: #ffd7a7;
+  background: #3a2d20;
 }
 
 .point-index {
@@ -270,7 +271,8 @@ button {
   background: var(--pink);
   font-size: 0.78rem;
   font-weight: 800;
-  box-shadow: 3px 3px 0 #1f1a17;
+  color: #1b1712;
+  box-shadow: 3px 3px 0 #0b0d12;
 }
 
 .point-text {
@@ -283,7 +285,7 @@ button {
 }
 
 .editor-card {
-  background: linear-gradient(180deg, #fffef8 0%, #fff7de 100%);
+  background: linear-gradient(180deg, #202734 0%, #181d26 100%);
 }
 
 .editor-strip {
@@ -302,7 +304,7 @@ button {
 
 .prompt {
   margin: 0;
-  color: #473b34;
+  color: #d2c7b9;
 }
 
 .field-grid {
@@ -318,7 +320,7 @@ button {
 }
 
 .field-grid label span {
-  color: #6f4f26;
+  color: #f0b45e;
   font-size: 0.92rem;
   font-weight: 800;
 }
@@ -329,7 +331,7 @@ button {
 .reader-output {
   width: 100%;
   border: 3px solid var(--line);
-  background: #fffdfa;
+  background: #10141b;
   color: var(--ink);
   border-radius: 18px;
   padding: 14px 16px;
@@ -348,7 +350,7 @@ button {
 .preview-card {
   position: sticky;
   top: 24px;
-  background: linear-gradient(180deg, #fff8f2 0%, #ffeecf 100%);
+  background: linear-gradient(180deg, #212835 0%, #181d26 100%);
 }
 
 .synopsis-output,
@@ -373,6 +375,49 @@ button {
   background: linear-gradient(180deg, #fffef8 0%, #ffeec7 100%);
 }
 
+.library-card {
+  min-height: 70vh;
+}
+
+.library-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.library-item {
+  text-align: left;
+  border: 3px solid var(--line);
+  border-radius: 20px;
+  background: #202734;
+  color: var(--ink);
+  padding: 16px;
+  box-shadow: var(--shadow-small);
+}
+
+.library-item.active {
+  background: #3a2d20;
+}
+
+.library-item-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.library-item strong {
+  display: block;
+  margin-bottom: 8px;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.library-item p {
+  margin: 0;
+  color: #c5b8aa;
+}
+
 .reader-output {
   min-height: 60vh;
 }
@@ -393,7 +438,7 @@ button {
   max-height: min(92vh, 900px);
   overflow: auto;
   padding: 22px;
-  background: linear-gradient(180deg, #fffef9 0%, #ffe7b8 100%);
+  background: linear-gradient(180deg, #202734 0%, #171b23 100%);
 }
 
 .modal-header {
@@ -423,8 +468,8 @@ button {
   overflow: auto;
   padding: 18px 14px 24px;
   border-right: 3px solid var(--line);
-  background: linear-gradient(180deg, #fffef7 0%, #ffe3af 100%);
-  box-shadow: 8px 0 0 #1f1a17;
+  background: linear-gradient(180deg, #202734 0%, #171b23 100%);
+  box-shadow: 8px 0 0 #0b0d12;
 }
 
 .drawer-header {
@@ -477,7 +522,11 @@ button {
   .reader-card {
     padding: 14px;
     border-radius: 18px;
-    box-shadow: 5px 5px 0 #1f1a17;
+    box-shadow: 5px 5px 0 #0b0d12;
+  }
+
+  .library-grid {
+    grid-template-columns: 1fr;
   }
 
   .editor-card {
@@ -564,7 +613,7 @@ button {
     content: "Swipe left or right to change point";
     display: block;
     margin-top: 8px;
-    color: #6d655d;
+    color: #918777;
     font-size: 0.74rem;
     text-align: center;
   }
@@ -615,7 +664,7 @@ button {
     margin: 16px -16px -16px;
     padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
     border-top: 3px solid var(--line);
-    background: #fff6df;
+    background: #1b212b;
   }
 
   .mobile-settings-button {
@@ -640,15 +689,15 @@ button {
     padding: 10px;
     border: 3px solid var(--line);
     border-radius: 20px;
-    background: #fffaf0;
-    box-shadow: 5px 5px 0 #1f1a17;
+    background: #1b212b;
+    box-shadow: 5px 5px 0 #0b0d12;
   }
 
   .mobile-bottom-status {
     display: flex;
     justify-content: space-between;
     gap: 12px;
-    color: #6b5f55;
+    color: #c5b8aa;
     font-size: 0.9rem;
     font-weight: 800;
   }

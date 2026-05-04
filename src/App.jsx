@@ -3,18 +3,28 @@ import { MobileBottomBar } from './components/MobileBottomBar.jsx'
 import { MobileOutlineDrawer } from './components/MobileOutlineDrawer.jsx'
 import { OutlineContent } from './components/OutlineContent.jsx'
 import { SettingsModal } from './components/SettingsModal.jsx'
+import { StoryLibrary } from './components/StoryLibrary.jsx'
 import { SynopsisReader } from './components/SynopsisReader.jsx'
 import { storyFramework } from './storyFramework'
 
 const STORAGE_KEY = 'story-outline-3act-tool'
 
-const createInitialProject = () => ({
-  title: '',
-  genre: '',
-  logline: '',
-  theme: '',
-  points: Object.fromEntries(storyFramework.map((point) => [point.id, ''])),
-})
+const createEmptyPoints = () => Object.fromEntries(storyFramework.map((point) => [point.id, '']))
+
+const createProject = () => {
+  const timestamp = new Date().toISOString()
+
+  return {
+    id: `story-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    title: '',
+    genre: '',
+    logline: '',
+    theme: '',
+    points: createEmptyPoints(),
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  }
+}
 
 const hasProjectContent = (project) => {
   if (!project) return false
@@ -28,52 +38,88 @@ const hasProjectContent = (project) => {
   return hasFieldContent || hasPointContent
 }
 
+const normalizeProject = (project) => ({
+  ...createProject(),
+  ...project,
+  points: {
+    ...createEmptyPoints(),
+    ...(project.points ?? {}),
+  },
+  id: project.id ?? createProject().id,
+  createdAt: project.createdAt ?? new Date().toISOString(),
+  updatedAt: project.updatedAt ?? new Date().toISOString(),
+})
+
+const normalizeStore = (raw) => {
+  if (raw && Array.isArray(raw.projects)) {
+    const projects = raw.projects.map(normalizeProject)
+    const currentProjectId =
+      projects.find((project) => project.id === raw.currentProjectId)?.id ?? projects[0]?.id ?? null
+
+    return { projects, currentProjectId }
+  }
+
+  if (raw && typeof raw === 'object') {
+    const migratedProject = normalizeProject(raw)
+    return {
+      projects: [migratedProject],
+      currentProjectId: migratedProject.id,
+    }
+  }
+
+  return {
+    projects: [],
+    currentProjectId: null,
+  }
+}
+
 function App() {
-  const [project, setProject] = useState(createInitialProject)
+  const [projects, setProjects] = useState([])
+  const [currentProjectId, setCurrentProjectId] = useState(null)
   const [selectedPointId, setSelectedPointId] = useState(storyFramework[0].id)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isOutlineOpen, setIsOutlineOpen] = useState(false)
   const [isReaderOpen, setIsReaderOpen] = useState(false)
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false)
   const [isHydrated, setIsHydrated] = useState(false)
   const [touchStart, setTouchStart] = useState(null)
 
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY)
+    const parsed = raw ? JSON.parse(raw) : null
+    const store = normalizeStore(parsed)
 
-    if (!raw) {
+    if (store.projects.length === 0) {
+      const firstProject = createProject()
+      setProjects([firstProject])
+      setCurrentProjectId(firstProject.id)
       setIsSettingsOpen(true)
       setIsHydrated(true)
       return
     }
 
-    try {
-      const saved = {
-        ...createInitialProject(),
-        ...JSON.parse(raw),
-      }
-
-      const normalizedProject = {
-        ...saved,
-        points: {
-          ...createInitialProject().points,
-          ...(saved.points ?? {}),
-        },
-      }
-
-      setProject(normalizedProject)
-      setIsSettingsOpen(!hasProjectContent(normalizedProject))
-    } catch (error) {
-      console.error('Failed to parse saved project', error)
-      setIsSettingsOpen(true)
-    } finally {
-      setIsHydrated(true)
-    }
+    setProjects(store.projects)
+    setCurrentProjectId(store.currentProjectId)
+    setIsSettingsOpen(!hasProjectContent(store.projects.find((project) => project.id === store.currentProjectId)))
+    setIsHydrated(true)
   }, [])
 
   useEffect(() => {
     if (!isHydrated) return
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(project))
-  }, [isHydrated, project])
+
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        projects,
+        currentProjectId,
+      }),
+    )
+  }, [currentProjectId, isHydrated, projects])
+
+  const currentProject = useMemo(
+    () => projects.find((project) => project.id === currentProjectId) ?? null,
+    [currentProjectId, projects],
+  )
 
   const selectedPoint =
     storyFramework.find((point) => point.id === selectedPointId) ?? storyFramework[0]
@@ -82,57 +128,88 @@ function App() {
   const nextPoint =
     selectedPointIndex < storyFramework.length - 1 ? storyFramework[selectedPointIndex + 1] : null
 
-  const completedCount = useMemo(
-    () =>
-      storyFramework.filter((point) => {
-        const content = project.points[point.id] ?? ''
-        return content.trim().length > 0
-      }).length,
-    [project.points],
-  )
+  const completedCount = useMemo(() => {
+    if (!currentProject) return 0
+
+    return storyFramework.filter((point) => {
+      const content = currentProject.points[point.id] ?? ''
+      return content.trim().length > 0
+    }).length
+  }, [currentProject])
 
   const synopsis = useMemo(() => {
+    if (!currentProject) return ''
+
     const sections = storyFramework
       .map((point) => {
-        const content = project.points[point.id]?.trim()
+        const content = currentProject.points[point.id]?.trim()
         if (!content) return null
         return `${point.title}\n${content}`
       })
       .filter(Boolean)
 
     const projectHeader = [
-      project.title.trim() ? `ชื่อเรื่อง: ${project.title.trim()}` : null,
-      project.genre.trim() ? `แนว: ${project.genre.trim()}` : null,
-      project.theme.trim() ? `ธีม: ${project.theme.trim()}` : null,
-      project.logline.trim() ? `Logline: ${project.logline.trim()}` : null,
+      currentProject.title.trim() ? `ชื่อเรื่อง: ${currentProject.title.trim()}` : null,
+      currentProject.genre.trim() ? `แนว: ${currentProject.genre.trim()}` : null,
+      currentProject.theme.trim() ? `ธีม: ${currentProject.theme.trim()}` : null,
+      currentProject.logline.trim() ? `Logline: ${currentProject.logline.trim()}` : null,
     ]
       .filter(Boolean)
       .join('\n')
 
     return [projectHeader, ...sections].filter(Boolean).join('\n\n')
-  }, [project])
+  }, [currentProject])
+
+  const updateCurrentProject = (updater) => {
+    setProjects((currentProjects) =>
+      currentProjects.map((project) => {
+        if (project.id !== currentProjectId) return project
+
+        const nextProject = typeof updater === 'function' ? updater(project) : updater
+        return {
+          ...nextProject,
+          updatedAt: new Date().toISOString(),
+        }
+      }),
+    )
+  }
 
   const updateProjectField = (field, value) => {
-    setProject((current) => ({
-      ...current,
+    updateCurrentProject((project) => ({
+      ...project,
       [field]: value,
     }))
   }
 
   const updatePointContent = (pointId, value) => {
-    setProject((current) => ({
-      ...current,
+    updateCurrentProject((project) => ({
+      ...project,
       points: {
-        ...current.points,
+        ...project.points,
         [pointId]: value,
       },
     }))
   }
 
-  const createNewStory = () => {
-    setProject(createInitialProject())
+  const createAndOpenNewStory = () => {
+    const project = createProject()
+    setProjects((currentProjects) => [project, ...currentProjects])
+    setCurrentProjectId(project.id)
     setSelectedPointId(storyFramework[0].id)
+    setIsLibraryOpen(false)
+    setIsReaderOpen(false)
+    setIsOutlineOpen(false)
     setIsSettingsOpen(true)
+  }
+
+  const openStory = (projectId) => {
+    setCurrentProjectId(projectId)
+    setSelectedPointId(storyFramework[0].id)
+    setIsLibraryOpen(false)
+    setIsReaderOpen(false)
+    setIsOutlineOpen(false)
+    const project = projects.find((item) => item.id === projectId)
+    setIsSettingsOpen(project ? !hasProjectContent(project) : false)
   }
 
   const copySynopsis = async () => {
@@ -177,8 +254,20 @@ function App() {
     }
   }
 
-  if (!isHydrated) {
+  if (!isHydrated || !currentProject) {
     return null
+  }
+
+  if (isLibraryOpen) {
+    return (
+      <StoryLibrary
+        projects={projects}
+        currentProjectId={currentProjectId}
+        onBack={() => setIsLibraryOpen(false)}
+        onCreateNew={createAndOpenNewStory}
+        onOpenProject={openStory}
+      />
+    )
   }
 
   if (isReaderOpen) {
@@ -196,16 +285,16 @@ function App() {
     <>
       <SettingsModal
         isOpen={isSettingsOpen}
-        project={project}
+        project={currentProject}
         onClose={() => setIsSettingsOpen(false)}
-        onCreateNew={createNewStory}
+        onCreateNew={createAndOpenNewStory}
         onFieldChange={updateProjectField}
       />
 
       <MobileOutlineDrawer
         isOpen={isOutlineOpen}
         selectedPointId={selectedPointId}
-        project={project}
+        project={currentProject}
         completedCount={completedCount}
         onClose={() => setIsOutlineOpen(false)}
         onSelectPoint={(pointId) => {
@@ -219,14 +308,14 @@ function App() {
           <div className="hero-brand">
             <p className="eyebrow">3 Act Story Lab</p>
             <h1>Story Synopsis Builder</h1>
-            <p className="hero-status">{project.title.trim() || 'Untitled Story'}</p>
+            <p className="hero-status">{currentProject.title.trim() || 'Untitled Story'}</p>
           </div>
           <div className="hero-actions">
             <button className="secondary-button" type="button" onClick={() => setIsSettingsOpen(true)}>
               ตั้งค่าเรื่อง
             </button>
-            <button className="secondary-button" type="button" onClick={createNewStory}>
-              สร้างเรื่องใหม่
+            <button className="secondary-button" type="button" onClick={() => setIsLibraryOpen(true)}>
+              เรื่องทั้งหมด
             </button>
             <button className="primary-button" type="button" onClick={() => setIsReaderOpen(true)}>
               อ่านเรื่องย่อ
@@ -237,7 +326,7 @@ function App() {
         <section className="workspace">
           <aside className="sidebar">
             <OutlineContent
-              project={project}
+              project={currentProject}
               selectedPointId={selectedPointId}
               completedCount={completedCount}
               onSelectPoint={setSelectedPointId}
@@ -266,7 +355,7 @@ function App() {
               </div>
               <textarea
                 className="point-editor"
-                value={project.points[selectedPoint.id] ?? ''}
+                value={currentProject.points[selectedPoint.id] ?? ''}
                 onChange={(event) => updatePointContent(selectedPoint.id, event.target.value)}
                 placeholder="เขียนรายละเอียดของ point นี้ที่นี่"
                 rows={16}
@@ -302,7 +391,7 @@ function App() {
         totalPoints={storyFramework.length}
         onOpenOutline={() => setIsOutlineOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
-        onCreateNew={createNewStory}
+        onOpenLibrary={() => setIsLibraryOpen(true)}
         onOpenReader={() => setIsReaderOpen(true)}
       />
     </>
