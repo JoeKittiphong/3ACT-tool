@@ -65,6 +65,11 @@
     align-items: stretch;
   }
 
+  .workspace,
+  .editor-panel {
+    min-height: 0;
+  }
+
   .editor-strip {
     gap: 8px;
     margin-bottom: 10px;
@@ -100,7 +105,7 @@
   .reader-output {
     min-height: 0;
     flex: 1 1 auto;
-    height: auto;
+    height: 100%;
     max-height: 100%;
     border-radius: 16px;
     padding: 12px 14px;
