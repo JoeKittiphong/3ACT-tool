@@ -383,6 +383,25 @@ button {
   background: linear-gradient(180deg, #fffef8 0%, #ffeec7 100%);
 }
 
+.auth-card {
+  width: min(680px, 100%);
+}
+
+.auth-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.auth-message {
+  margin: 0;
+  color: #b7ab9c;
+}
+
+.auth-message.error {
+  color: #ffb5b5;
+}
+
 .ui-card {
   display: block;
 }

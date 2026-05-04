@@ -11,6 +11,8 @@ export function EditorWorkspace({
   completedCount,
   totalPoints,
   synopsis,
+  syncStatus,
+  isCloudMode,
   onTouchStart,
   onTouchEnd,
   onPointContentChange,
@@ -19,7 +21,22 @@ export function EditorWorkspace({
   onOpenLibrary,
   onOpenReader,
   onOpenOutline,
+  onSignOut,
 }) {
+  const syncLabelMap = {
+    local: 'Local only',
+    syncing: 'Syncing...',
+    synced: 'Synced',
+    error: 'Sync error',
+  }
+
+  const syncToneMap = {
+    local: 'blue',
+    syncing: 'yellow',
+    synced: 'green',
+    error: 'pink',
+  }
+
   return (
     <>
       <div className="app-shell">
@@ -30,6 +47,9 @@ export function EditorWorkspace({
             description={project.title.trim() || 'Untitled Story'}
             actions={
               <>
+                <Badge tone={syncToneMap[syncStatus] ?? 'blue'}>
+                  {isCloudMode ? syncLabelMap[syncStatus] ?? 'Syncing...' : 'Local mode'}
+                </Badge>
                 <Button variant="secondary" onClick={onOpenSettings}>
                   ตั้งค่าเรื่อง
                 </Button>
@@ -39,6 +59,11 @@ export function EditorWorkspace({
                 <Button variant="primary" onClick={onOpenReader}>
                   อ่านเรื่องย่อ
                 </Button>
+                {isCloudMode ? (
+                  <Button variant="secondary" onClick={onSignOut}>
+                    Sign out
+                  </Button>
+                ) : null}
               </>
             }
           />
@@ -99,7 +124,7 @@ export function EditorWorkspace({
                 </Button>
               </div>
               <pre className="synopsis-output">
-                {synopsis || 'เมื่อเริ่มกรอกข้อมูลในแต่ละ point ระบบจะรวมเป็นเรื่องย่อให้ตรงนี้'}
+                {synopsis || 'เมื่อเริ่มกรอกข้อมูลในแต่ละ point ระบบจะรวมรวมเป็นเรื่องย่อให้ตรงนี้'}
               </pre>
             </Card>
           </aside>

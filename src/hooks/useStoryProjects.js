@@ -7,12 +7,19 @@ import {
   hasProjectContent,
   normalizeStore,
 } from '../lib/storyStore'
+import {
+  deleteStoryFromSupabase,
+  fetchStoriesFromSupabase,
+  syncStoryToSupabase,
+} from '../lib/storyRepository'
 
-export function useStoryProjects() {
+export function useStoryProjects({ user, syncEnabled }) {
   const [projects, setProjects] = useState([])
   const [currentProjectId, setCurrentProjectId] = useState(null)
   const [isHydrated, setIsHydrated] = useState(false)
   const [shouldOpenSettings, setShouldOpenSettings] = useState(false)
+  const [syncStatus, setSyncStatus] = useState('local')
+  const [hasRemoteBootstrapped, setHasRemoteBootstrapped] = useState(false)
 
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY)
@@ -47,6 +54,50 @@ export function useStoryProjects() {
     )
   }, [currentProjectId, isHydrated, projects])
 
+  useEffect(() => {
+    if (!isHydrated || !syncEnabled || !user?.id || hasRemoteBootstrapped) return
+
+    let cancelled = false
+
+    const bootstrap = async () => {
+      try {
+        setSyncStatus('syncing')
+        const remoteProjects = await fetchStoriesFromSupabase(user.id)
+        if (cancelled) return
+
+        if (remoteProjects.length > 0) {
+          setProjects(remoteProjects)
+          const nextCurrentProject =
+            remoteProjects.find((project) => project.id === currentProjectId) ?? remoteProjects[0]
+          setCurrentProjectId(nextCurrentProject?.id ?? null)
+          setShouldOpenSettings(nextCurrentProject ? !hasProjectContent(nextCurrentProject) : false)
+        } else {
+          const nonEmptyLocalProjects = projects.filter(hasProjectContent)
+          for (const project of nonEmptyLocalProjects) {
+            await syncStoryToSupabase(project, user.id)
+          }
+        }
+
+        if (!cancelled) {
+          setSyncStatus('synced')
+          setHasRemoteBootstrapped(true)
+        }
+      } catch (error) {
+        console.error('Failed to bootstrap stories from Supabase', error)
+        if (!cancelled) {
+          setSyncStatus('error')
+          setHasRemoteBootstrapped(true)
+        }
+      }
+    }
+
+    bootstrap()
+
+    return () => {
+      cancelled = true
+    }
+  }, [currentProjectId, hasRemoteBootstrapped, isHydrated, projects, syncEnabled, user?.id])
+
   const currentProject = useMemo(
     () => projects.find((project) => project.id === currentProjectId) ?? null,
     [currentProjectId, projects],
@@ -54,6 +105,25 @@ export function useStoryProjects() {
 
   const completedCount = useMemo(() => getCompletedCount(currentProject), [currentProject])
   const synopsis = useMemo(() => buildSynopsis(currentProject), [currentProject])
+
+  useEffect(() => {
+    if (!isHydrated || !syncEnabled || !user?.id || !hasRemoteBootstrapped || !currentProject) return
+
+    const timeoutId = window.setTimeout(async () => {
+      try {
+        setSyncStatus('syncing')
+        await syncStoryToSupabase(currentProject, user.id)
+        setSyncStatus('synced')
+      } catch (error) {
+        console.error('Failed to sync story to Supabase', error)
+        setSyncStatus('error')
+      }
+    }, 900)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+    }
+  }, [currentProject, hasRemoteBootstrapped, isHydrated, syncEnabled, user?.id])
 
   const updateCurrentProject = (updater) => {
     setProjects((currentProjects) =>
@@ -116,6 +186,13 @@ export function useStoryProjects() {
   }
 
   const deleteStory = (projectId) => {
+    if (syncEnabled && user?.id) {
+      deleteStoryFromSupabase(projectId, user.id).catch((error) => {
+        console.error('Failed to delete story from Supabase', error)
+        setSyncStatus('error')
+      })
+    }
+
     const remainingProjects = projects.filter((project) => project.id !== projectId)
 
     if (remainingProjects.length === 0) {
@@ -153,6 +230,7 @@ export function useStoryProjects() {
     isHydrated,
     shouldOpenSettings,
     setShouldOpenSettings,
+    syncStatus,
     updateProjectField,
     updatePointContent,
     createAndOpenNewStory,
