@@ -149,6 +149,19 @@
     display: none;
   }
 
+  .settings-modal .eyebrow,
+  .settings-modal .modal-copy {
+    display: none;
+  }
+
+  .settings-modal .modal-header {
+    gap: 8px;
+  }
+
+  .settings-modal .modal-header h2 {
+    margin-bottom: 0;
+  }
+
   .field-grid {
     grid-template-columns: 1fr;
     gap: 12px;
