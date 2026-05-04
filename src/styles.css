@@ -381,18 +381,20 @@ button {
 
 .library-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: 1fr;
+  gap: 10px;
 }
 
 .library-item {
+  position: relative;
   text-align: left;
   border: 3px solid var(--line);
-  border-radius: 20px;
+  border-radius: 18px;
   background: #202734;
   color: var(--ink);
-  padding: 16px;
+  padding: 12px 44px 12px 12px;
   box-shadow: var(--shadow-small);
+  cursor: pointer;
 }
 
 .library-item.active {
@@ -404,18 +406,42 @@ button {
   justify-content: space-between;
   gap: 10px;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .library-item strong {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.92rem;
 }
 
 .library-item p {
   margin: 0;
   color: #c5b8aa;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.danger-button {
+  background: #5c2222;
+  color: #fff1ef;
+}
+
+.library-delete-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  min-width: 0;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 0.9rem;
+  line-height: 1;
 }
 
 .reader-output {
@@ -525,10 +551,6 @@ button {
     box-shadow: 5px 5px 0 #0b0d12;
   }
 
-  .library-grid {
-    grid-template-columns: 1fr;
-  }
-
   .editor-card {
     min-height: calc(100vh - 24px);
   }
@@ -596,6 +618,10 @@ button {
     align-self: flex-start;
     padding: 6px 10px;
     font-size: 0.78rem;
+  }
+
+  .library-item {
+    padding-right: 40px;
   }
 
   .prompt {
