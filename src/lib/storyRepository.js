@@ -51,7 +51,9 @@ export async function syncStoryToSupabase(project, userId) {
     ...point,
     user_id: userId,
   }))
-  const { error: pointsError } = await supabase.from('story_points').upsert(pointRows)
+  const { error: pointsError } = await supabase.from('story_points').upsert(pointRows, {
+    onConflict: 'story_id, point_id',
+  })
 
   if (pointsError) throw pointsError
 }

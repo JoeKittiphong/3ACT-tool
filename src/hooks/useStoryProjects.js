@@ -12,6 +12,7 @@ import {
   fetchStoriesFromSupabase,
   syncStoryToSupabase,
 } from '../lib/storyRepository'
+import { getStoreData, setStoreData } from '../lib/idb'
 
 export function useStoryProjects({ user, syncEnabled }) {
   const [projects, setProjects] = useState([])
@@ -22,36 +23,62 @@ export function useStoryProjects({ user, syncEnabled }) {
   const [hasRemoteBootstrapped, setHasRemoteBootstrapped] = useState(false)
 
   useEffect(() => {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    const parsed = raw ? JSON.parse(raw) : null
-    const store = normalizeStore(parsed)
+    let mounted = true
 
-    if (store.projects.length === 0) {
-      const firstProject = createProject()
-      setProjects([firstProject])
-      setCurrentProjectId(firstProject.id)
-      setShouldOpenSettings(true)
-      setIsHydrated(true)
-      return
+    const hydrate = async () => {
+      try {
+        let raw = await getStoreData(STORAGE_KEY)
+
+        // Migrate from localStorage if nothing is in IndexedDB
+        if (!raw) {
+          const localRaw = window.localStorage.getItem(STORAGE_KEY)
+          if (localRaw) {
+            try {
+              raw = JSON.parse(localRaw)
+              await setStoreData(STORAGE_KEY, raw)
+            } catch (e) {
+              console.error('Failed to parse localStorage data', e)
+            }
+          }
+        }
+
+        if (!mounted) return
+
+        const store = normalizeStore(raw)
+
+        if (store.projects.length === 0) {
+          const firstProject = createProject()
+          setProjects([firstProject])
+          setCurrentProjectId(firstProject.id)
+          setShouldOpenSettings(true)
+          setIsHydrated(true)
+          return
+        }
+
+        const currentProject = store.projects.find((project) => project.id === store.currentProjectId) ?? null
+        setProjects(store.projects)
+        setCurrentProjectId(store.currentProjectId)
+        setShouldOpenSettings(!hasProjectContent(currentProject))
+        setIsHydrated(true)
+      } catch (error) {
+        console.error('Failed to hydrate store', error)
+      }
     }
 
-    const currentProject = store.projects.find((project) => project.id === store.currentProjectId) ?? null
-    setProjects(store.projects)
-    setCurrentProjectId(store.currentProjectId)
-    setShouldOpenSettings(!hasProjectContent(currentProject))
-    setIsHydrated(true)
+    hydrate()
+
+    return () => {
+      mounted = false
+    }
   }, [])
 
   useEffect(() => {
     if (!isHydrated) return
 
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        projects,
-        currentProjectId,
-      }),
-    )
+    setStoreData(STORAGE_KEY, {
+      projects,
+      currentProjectId,
+    }).catch((err) => console.error('Failed to save to IndexedDB', err))
   }, [currentProjectId, isHydrated, projects])
 
   useEffect(() => {
