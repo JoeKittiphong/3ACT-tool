@@ -77,14 +77,16 @@ export const getCompletedCount = (project) => {
   }).length
 }
 
-export const buildSynopsis = (project) => {
+export const buildSynopsis = (project, options = {}) => {
   if (!project) return ''
+
+  const { includePointTitles = true } = options
 
   const sections = storyFramework
     .map((point) => {
       const content = project.points[point.id]?.trim()
       if (!content) return null
-      return `${point.title}\n${content}`
+      return includePointTitles ? `${point.title}\n${content}` : content
     })
     .filter(Boolean)
 

@@ -120,6 +120,16 @@
   min-height: 60vh;
 }
 
+.reader-toolbar {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: -4px;
+}
+
+.reader-toggle-button {
+  padding: 8px 12px;
+}
+
 .synopsis-reader-card {
   min-height: 70vh;
 }

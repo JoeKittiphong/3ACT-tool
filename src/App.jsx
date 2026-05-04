@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import { AuthScreen } from './components/AuthScreen.jsx'
 import { EditorWorkspace } from './components/EditorWorkspace.jsx'
 import { MobileOutlineDrawer } from './components/MobileOutlineDrawer.jsx'
@@ -10,9 +11,12 @@ import { useAuthFlow } from './hooks/useAuthFlow.js'
 import { useStoryProjects } from './hooks/useStoryProjects.js'
 import { useSupabaseAuth } from './hooks/useSupabaseAuth.js'
 import { useWorkspaceViewState } from './hooks/useWorkspaceViewState.js'
+import { buildSynopsis } from './lib/storyStore'
 import { storyFramework } from './storyFramework'
 
 function App() {
+  const [showPointTitlesInReader, setShowPointTitlesInReader] = useState(true)
+
   const {
     user,
     loading: authLoading,
@@ -69,6 +73,11 @@ function App() {
     handleTouchEnd,
   } = useWorkspaceViewState(storyFramework)
 
+  const readerSynopsis = useMemo(
+    () => buildSynopsis(currentProject, { includePointTitles: showPointTitlesInReader }),
+    [currentProject, showPointTitlesInReader],
+  )
+
   const openNewStory = () => {
     createAndOpenNewStory()
     resetWorkspaceView()
@@ -88,10 +97,10 @@ function App() {
   }
 
   const copySynopsis = async () => {
-    if (!synopsis.trim()) return
+    if (!readerSynopsis.trim()) return
 
     try {
-      await window.navigator.clipboard.writeText(synopsis)
+      await window.navigator.clipboard.writeText(readerSynopsis)
       window.alert('คัดลอกเรื่องย่อแล้ว')
     } catch (error) {
       console.error('Failed to copy synopsis', error)
@@ -133,7 +142,7 @@ function App() {
         <ConfirmDialog
           isOpen={Boolean(pendingDeleteProjectId)}
           title="ลบเรื่องนี้?"
-          description="ถ้าลบแล้วจะหายจากรายการเรื่องทั้งหมด และถ้าเปิด sync ไว้จะลบจาก cloud ด้วย"
+          description="ถ้าลบแล้วเรื่องนี้จะหายจากรายการ และถ้าเปิด sync ไว้จะถูกลบจาก cloud ด้วย"
           confirmLabel="ลบเรื่อง"
           cancelLabel="ยกเลิก"
           onConfirm={confirmDeleteStory}
@@ -146,8 +155,10 @@ function App() {
   if (activeView === 'reader') {
     return (
       <SynopsisReader
-        synopsis={synopsis}
+        synopsis={readerSynopsis}
         completedCount={completedCount}
+        showPointTitles={showPointTitlesInReader}
+        onTogglePointTitles={() => setShowPointTitlesInReader((current) => !current)}
         onBack={closeReader}
         onCopy={copySynopsis}
       />
