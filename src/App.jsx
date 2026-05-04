@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
-import { groupBySequence, storyFramework } from './storyFramework'
+import { MobileBottomBar } from './components/MobileBottomBar.jsx'
+import { MobileOutlineDrawer } from './components/MobileOutlineDrawer.jsx'
+import { OutlineContent } from './components/OutlineContent.jsx'
+import { SettingsModal } from './components/SettingsModal.jsx'
+import { SynopsisReader } from './components/SynopsisReader.jsx'
+import { storyFramework } from './storyFramework'
 
 const STORAGE_KEY = 'story-outline-3act-tool'
 
@@ -27,7 +32,10 @@ function App() {
   const [project, setProject] = useState(createInitialProject)
   const [selectedPointId, setSelectedPointId] = useState(storyFramework[0].id)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [isOutlineOpen, setIsOutlineOpen] = useState(false)
+  const [isReaderOpen, setIsReaderOpen] = useState(false)
   const [isHydrated, setIsHydrated] = useState(false)
+  const [touchStart, setTouchStart] = useState(null)
 
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY)
@@ -43,6 +51,7 @@ function App() {
         ...createInitialProject(),
         ...JSON.parse(raw),
       }
+
       const normalizedProject = {
         ...saved,
         points: {
@@ -128,6 +137,7 @@ function App() {
 
   const copySynopsis = async () => {
     if (!synopsis.trim()) return
+
     try {
       await window.navigator.clipboard.writeText(synopsis)
       window.alert('คัดลอกเรื่องย่อแล้ว')
@@ -137,92 +147,79 @@ function App() {
     }
   }
 
+  const handleTouchStart = (event) => {
+    const touch = event.changedTouches[0]
+    setTouchStart({
+      x: touch.clientX,
+      y: touch.clientY,
+    })
+  }
+
+  const handleTouchEnd = (event) => {
+    if (!touchStart) return
+
+    const touch = event.changedTouches[0]
+    const deltaX = touch.clientX - touchStart.x
+    const deltaY = touch.clientY - touchStart.y
+
+    setTouchStart(null)
+
+    if (Math.abs(deltaX) < 60 || Math.abs(deltaX) < Math.abs(deltaY)) {
+      return
+    }
+
+    if (deltaX < 0 && nextPoint) {
+      setSelectedPointId(nextPoint.id)
+    }
+
+    if (deltaX > 0 && previousPoint) {
+      setSelectedPointId(previousPoint.id)
+    }
+  }
+
   if (!isHydrated) {
     return null
   }
 
+  if (isReaderOpen) {
+    return (
+      <SynopsisReader
+        synopsis={synopsis}
+        completedCount={completedCount}
+        onBack={() => setIsReaderOpen(false)}
+        onCopy={copySynopsis}
+      />
+    )
+  }
+
   return (
     <>
-      {isSettingsOpen && (
-        <div className="modal-backdrop" role="presentation">
-          <section
-            className="settings-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="story-settings-title"
-          >
-            <div className="modal-header">
-              <div>
-                <p className="eyebrow">Story Setup</p>
-                <h2 id="story-settings-title">ตั้งค่าเรื่องย่อ</h2>
-                <p className="modal-copy">
-                  กำหนดข้อมูลตั้งต้นของเรื่องก่อน แล้วค่อยลงรายละเอียดในแต่ละ point
-                </p>
-              </div>
-              <button
-                className="secondary-button modal-close"
-                type="button"
-                onClick={() => setIsSettingsOpen(false)}
-              >
-                ปิด
-              </button>
-            </div>
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        project={project}
+        onClose={() => setIsSettingsOpen(false)}
+        onCreateNew={createNewStory}
+        onFieldChange={updateProjectField}
+      />
 
-            <div className="field-grid">
-              <label>
-                <span>ชื่อเรื่อง</span>
-                <input
-                  value={project.title}
-                  onChange={(event) => updateProjectField('title', event.target.value)}
-                  placeholder="ชื่อโปรเจกต์หรือชื่อเรื่อง"
-                />
-              </label>
-              <label>
-                <span>แนวเรื่อง</span>
-                <input
-                  value={project.genre}
-                  onChange={(event) => updateProjectField('genre', event.target.value)}
-                  placeholder="แฟนตาซี, โรแมนติก, สืบสวน..."
-                />
-              </label>
-              <label className="wide">
-                <span>ธีมหลัก</span>
-                <input
-                  value={project.theme}
-                  onChange={(event) => updateProjectField('theme', event.target.value)}
-                  placeholder="เรื่องนี้อยากพูดถึงอะไร"
-                />
-              </label>
-              <label className="wide">
-                <span>Logline</span>
-                <textarea
-                  value={project.logline}
-                  onChange={(event) => updateProjectField('logline', event.target.value)}
-                  placeholder="สรุปเรื่อง 1-2 ประโยค"
-                  rows={4}
-                />
-              </label>
-            </div>
-
-            <div className="modal-actions">
-              <button className="secondary-button" type="button" onClick={createNewStory}>
-                เริ่มเรื่องใหม่
-              </button>
-              <button className="primary-button" type="button" onClick={() => setIsSettingsOpen(false)}>
-                บันทึกและเริ่มเขียน
-              </button>
-            </div>
-          </section>
-        </div>
-      )}
+      <MobileOutlineDrawer
+        isOpen={isOutlineOpen}
+        selectedPointId={selectedPointId}
+        project={project}
+        completedCount={completedCount}
+        onClose={() => setIsOutlineOpen(false)}
+        onSelectPoint={(pointId) => {
+          setSelectedPointId(pointId)
+          setIsOutlineOpen(false)
+        }}
+      />
 
       <div className="app-shell">
         <header className="hero">
           <div className="hero-brand">
+            <p className="eyebrow">3 Act Story Lab</p>
             <h1>Story Synopsis Builder</h1>
-            <p className="hero-status">
-              {project.title.trim() || 'Untitled Story'}
-            </p>
+            <p className="hero-status">{project.title.trim() || 'Untitled Story'}</p>
           </div>
           <div className="hero-actions">
             <button className="secondary-button" type="button" onClick={() => setIsSettingsOpen(true)}>
@@ -231,99 +228,30 @@ function App() {
             <button className="secondary-button" type="button" onClick={createNewStory}>
               สร้างเรื่องใหม่
             </button>
-            <button className="primary-button" type="button" onClick={copySynopsis}>
-              คัดลอกเรื่องย่อ
+            <button className="primary-button" type="button" onClick={() => setIsReaderOpen(true)}>
+              อ่านเรื่องย่อ
             </button>
           </div>
         </header>
 
         <section className="workspace">
           <aside className="sidebar">
-            <div className="sidebar-header">
-              <div>
-                <p className="sidebar-label">Progress</p>
-                <strong>
-                  {completedCount}/{storyFramework.length} points
-                </strong>
-              </div>
-              <div className="progress-pill">
-                {Math.round((completedCount / storyFramework.length) * 100)}%
-              </div>
-            </div>
-
-            {Object.entries(groupBySequence).map(([groupTitle, points]) => (
-              <section key={groupTitle} className="sequence-group">
-                <h2>{groupTitle}</h2>
-                <div className="point-list">
-                  {points.map((point) => {
-                    const isActive = point.id === selectedPointId
-                    const hasContent = (project.points[point.id] ?? '').trim().length > 0
-                    return (
-                      <button
-                        key={point.id}
-                        type="button"
-                        className={`point-item ${isActive ? 'active' : ''}`}
-                        onClick={() => setSelectedPointId(point.id)}
-                      >
-                        <span className="point-index">{point.id.toUpperCase()}</span>
-                        <span className="point-text">
-                          <strong>{point.title}</strong>
-                          <small>{hasContent ? 'เขียนแล้ว' : 'ยังไม่เขียน'}</small>
-                        </span>
-                      </button>
-                    )
-                  })}
-                </div>
-              </section>
-            ))}
+            <OutlineContent
+              project={project}
+              selectedPointId={selectedPointId}
+              completedCount={completedCount}
+              onSelectPoint={setSelectedPointId}
+            />
           </aside>
 
           <main className="editor-panel">
-            <div className="panel-card">
-              <div className="mobile-progress">
-                <div>
-                  <p className="panel-kicker">Writing Progress</p>
-                  <strong>
-                    {completedCount}/{storyFramework.length} points completed
-                  </strong>
-                </div>
-                <div className="progress-pill">
-                  {Math.round((completedCount / storyFramework.length) * 100)}%
-                </div>
+            <div className="panel-card editor-card" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+              <div className="editor-strip">
+                <span className="editor-badge">Writing Room</span>
+                <span className="editor-badge light">
+                  {completedCount}/{storyFramework.length} completed
+                </span>
               </div>
-
-              <div className="mobile-nav">
-                <button
-                  className="secondary-button nav-button"
-                  type="button"
-                  onClick={() => previousPoint && setSelectedPointId(previousPoint.id)}
-                  disabled={!previousPoint}
-                >
-                  Previous
-                </button>
-                <label className="point-picker">
-                  <span>Point</span>
-                  <select
-                    value={selectedPoint.id}
-                    onChange={(event) => setSelectedPointId(event.target.value)}
-                  >
-                    {storyFramework.map((point) => (
-                      <option key={point.id} value={point.id}>
-                        {point.id.toUpperCase()} - {point.title}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <button
-                  className="secondary-button nav-button"
-                  type="button"
-                  onClick={() => nextPoint && setSelectedPointId(nextPoint.id)}
-                  disabled={!nextPoint}
-                >
-                  Next
-                </button>
-              </div>
-
               <div className="panel-heading">
                 <div>
                   <p className="panel-kicker">
@@ -331,9 +259,11 @@ function App() {
                   </p>
                   <h2>{selectedPoint.title}</h2>
                 </div>
-                <span className="chip">{selectedPoint.id.toUpperCase()}</span>
               </div>
-              <p className="prompt">{selectedPoint.prompt}</p>
+              <div className="prompt-row">
+                <span className="chip">{selectedPoint.id.toUpperCase()}</span>
+                <p className="prompt">{selectedPoint.prompt}</p>
+              </div>
               <textarea
                 className="point-editor"
                 value={project.points[selectedPoint.id] ?? ''}
@@ -354,8 +284,8 @@ function App() {
               </div>
               <div className="preview-meta">
                 <span>{completedCount} sections ready</span>
-                <button className="secondary-button preview-copy" type="button" onClick={copySynopsis}>
-                  Copy
+                <button className="secondary-button preview-copy" type="button" onClick={() => setIsReaderOpen(true)}>
+                  อ่าน
                 </button>
               </div>
               <pre className="synopsis-output">
@@ -365,6 +295,16 @@ function App() {
           </aside>
         </section>
       </div>
+
+      <MobileBottomBar
+        selectedPoint={selectedPoint}
+        completedCount={completedCount}
+        totalPoints={storyFramework.length}
+        onOpenOutline={() => setIsOutlineOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onCreateNew={createNewStory}
+        onOpenReader={() => setIsReaderOpen(true)}
+      />
     </>
   )
 }
