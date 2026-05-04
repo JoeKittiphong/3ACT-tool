@@ -82,7 +82,7 @@ export function EditorWorkspace({
           <main className="editor-panel">
             <Card className="panel-card editor-card" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
               <div className="editor-strip">
-                <Badge>Writing Room</Badge>
+                <Badge>{project.title.trim() || 'Untitled Story'}</Badge>
                 <Badge tone="green">
                   {completedCount}/{totalPoints} completed
                 </Badge>
@@ -106,6 +106,12 @@ export function EditorWorkspace({
                 placeholder="เขียนรายละเอียดของ point นี้ที่นี่"
                 rows={16}
               />
+              <div className="editor-footer">
+                <span className="char-count">
+                  ความยาว: {(project.points[selectedPoint.id] ?? '').length} ตัวอักษร 
+                  <span className="char-recommend"> (แนะนำประมาณ 150-300 ตัวอักษร)</span>
+                </span>
+              </div>
             </Card>
           </main>
 

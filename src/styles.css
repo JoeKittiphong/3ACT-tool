@@ -115,10 +115,18 @@ button {
 }
 
 .hero-brand,
-.sidebar,
 .editor-panel,
 .preview-panel {
   min-width: 0;
+}
+
+.sidebar {
+  min-width: 0;
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding-right: 8px; /* space for scrollbar */
 }
 
 .hero-status,
@@ -360,6 +368,23 @@ button {
 
 .point-editor {
   min-height: 360px;
+}
+
+.editor-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.char-count {
+  font-size: 0.82rem;
+  color: #b7ab9c;
+  font-weight: 700;
+}
+
+.char-recommend {
+  color: #6a6258;
+  font-weight: 500;
 }
 
 .preview-card {
