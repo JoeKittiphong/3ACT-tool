@@ -44,8 +44,7 @@ export function EditorWorkspace({
         <header className="hero">
           <PageHeader
             eyebrow="3 Act Story Lab"
-            title="Story Synopsis Builder"
-            description={project.title.trim() || 'Untitled Story'}
+            title="Synopsis Tool"
             actions={
               <>
                 <Badge tone={syncToneMap[syncStatus] ?? 'blue'}>

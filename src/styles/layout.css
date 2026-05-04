@@ -44,6 +44,20 @@
   font-size: clamp(1.7rem, 3vw, 2.7rem);
 }
 
+.hero .reader-header {
+  width: 100%;
+  align-items: center;
+}
+
+.hero .reader-header > div:first-child {
+  flex: 0 1 auto;
+}
+
+.hero .reader-actions {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
 .hero-brand,
 .editor-panel,
 .preview-panel {
