@@ -90,18 +90,16 @@ function App() {
     setPendingDeleteProjectId(null)
   }
 
-  const handleMagicLinkSignIn = async (email) => {
+  const handleEmailSignIn = async (email, password) => {
     setAuthError('')
     setAuthMessage('')
 
     try {
-      const { error } = await signInWithEmail(email)
+      const { error } = await signInWithEmail(email, password)
       if (error) throw error
-
-      setAuthMessage('ส่ง Magic Link แล้ว เปิดอีเมลนี้จากมือถือหรือ desktop เพื่อเข้าสู่ระบบ')
     } catch (error) {
-      console.error('Failed to send magic link', error)
-      setAuthError(error.message || 'ส่ง Magic Link ไม่สำเร็จ')
+      console.error('Auth failed', error)
+      setAuthError(error.message || 'เข้าสู่ระบบไม่สำเร็จ')
     }
   }
 
@@ -154,7 +152,7 @@ function App() {
   if (isConfigured && !user) {
     return (
       <AuthScreen
-        onSubmit={handleMagicLinkSignIn}
+        onSubmit={handleEmailSignIn}
         loading={authLoading}
         errorMessage={authError}
         infoMessage={authMessage}

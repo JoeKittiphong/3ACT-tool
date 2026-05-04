@@ -36,20 +36,27 @@ export function useSupabaseAuth() {
     }
   }, [])
 
-  const signInWithEmail = async (email) => {
+  const signInWithEmail = async (email, password) => {
     if (!supabase) throw new Error('Supabase is not configured')
 
-    const redirectBase = import.meta.env.VITE_SUPABASE_REDIRECT_URL?.trim()
-    const emailRedirectTo = redirectBase
-      ? new URL(redirectBase).toString()
-      : new URL('/', window.location.origin).toString()
-
-    return supabase.auth.signInWithOtp({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      options: {
-        emailRedirectTo,
-      },
+      password,
     })
+
+    // ถ้าเข้าสู่ระบบไม่ผ่านเพราะรหัสผิด หรือยังไม่มีบัญชี
+    if (error && error.message.includes('Invalid login credentials')) {
+      // ให้ทำการสมัครสมาชิกให้เลย
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+      })
+      if (signUpError) throw signUpError
+      return { data: signUpData, error: null }
+    }
+
+    if (error) throw error
+    return { data, error: null }
   }
 
   const signOut = async () => {

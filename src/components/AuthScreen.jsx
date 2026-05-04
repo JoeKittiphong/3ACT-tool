@@ -6,11 +6,12 @@ import { TextField } from './ui/TextField.jsx'
 
 export function AuthScreen({ onSubmit, loading, errorMessage, infoMessage }) {
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    if (!email.trim()) return
-    await onSubmit(email.trim())
+    if (!email.trim() || !password.trim()) return
+    await onSubmit(email.trim(), password)
   }
 
   return (
@@ -30,10 +31,17 @@ export function AuthScreen({ onSubmit, loading, errorMessage, infoMessage }) {
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@example.com"
           />
+          <TextField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder="รหัสผ่าน (ขั้นต่ำ 6 ตัวอักษร)"
+          />
           {infoMessage ? <p className="auth-message">{infoMessage}</p> : null}
           {errorMessage ? <p className="auth-message error">{errorMessage}</p> : null}
-          <Button variant="primary" type="submit" disabled={loading || !email.trim()}>
-            {loading ? 'กำลังส่งลิงก์...' : 'ส่ง Magic Link'}
+          <Button variant="primary" type="submit" disabled={loading || !email.trim() || !password.trim()}>
+            {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ / สมัครสมาชิก'}
           </Button>
         </form>
       </Card>

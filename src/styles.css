@@ -385,21 +385,65 @@ button {
 
 .auth-card {
   width: min(680px, 100%);
+  color: #1b1712;
+}
+
+.auth-card h1 {
+  color: #1b1712;
+}
+
+.auth-card .eyebrow {
+  color: #d15024;
+}
+
+.auth-card .reader-meta {
+  color: #5c4e43;
 }
 
 .auth-form {
   display: grid;
-  gap: 14px;
-  margin-top: 18px;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.auth-form label span {
+  display: block;
+  color: #1b1712;
+  font-size: 0.95rem;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.auth-form input {
+  width: 100%;
+  border: 3px solid var(--line);
+  background: #ffffff;
+  color: #1b1712;
+  border-radius: 18px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow-small);
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.auth-form input:focus {
+  outline: none;
+  transform: translate(-1px, -1px);
+  box-shadow: var(--shadow);
 }
 
 .auth-message {
   margin: 0;
-  color: #b7ab9c;
+  color: #5c4e43;
+  font-weight: 700;
 }
 
 .auth-message.error {
-  color: #ffb5b5;
+  color: #1b1712;
+  background: #ffb5b5;
+  padding: 12px;
+  border-radius: 12px;
+  border: 3px solid var(--line);
+  box-shadow: 4px 4px 0 #0b0d12;
 }
 
 .ui-card {
