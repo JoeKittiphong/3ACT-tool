@@ -265,7 +265,14 @@ button {
 }
 
 .point-item.active {
-  background: #3a2d20;
+  background: var(--yellow);
+  color: #1b1712;
+  box-shadow: var(--shadow);
+  transform: translate(-2px, -2px);
+}
+
+.point-item.active .point-text small {
+  color: #5c4e43;
 }
 
 .point-index {
