@@ -64,6 +64,15 @@ export function useSupabaseAuth() {
     await supabase.auth.signOut()
   }
 
+  const resetPassword = async (email) => {
+    if (!supabase) throw new Error('Supabase is not configured')
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin,
+    })
+    if (error) throw error
+    return { data, error: null }
+  }
+
   return {
     session,
     user,
@@ -71,5 +80,6 @@ export function useSupabaseAuth() {
     isConfigured: isSupabaseConfigured,
     signInWithEmail,
     signOut,
+    resetPassword,
   }
 }

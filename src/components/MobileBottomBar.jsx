@@ -4,13 +4,33 @@ export function MobileBottomBar({
   selectedPoint,
   completedCount,
   totalPoints,
+  syncStatus,
+  isCloudMode,
   onOpenOutline,
   onOpenSettings,
   onOpenLibrary,
   onOpenReader,
+  onSignOut,
 }) {
+  const syncLabelMap = {
+    local: 'Local',
+    syncing: 'Syncing',
+    synced: 'Synced',
+    error: 'Error',
+  }
+
   return (
     <div className="mobile-bottom-bar">
+      <div className="mobile-cloud-tools">
+        <span className={`mobile-sync-pill ${syncStatus ?? 'local'}`}>
+          {isCloudMode ? syncLabelMap[syncStatus] ?? 'Syncing' : 'Local mode'}
+        </span>
+        {isCloudMode ? (
+          <Button variant="secondary" className="mobile-bottom-button mobile-signout-button" onClick={onSignOut}>
+            Sign out
+          </Button>
+        ) : null}
+      </div>
       <div className="mobile-bottom-status">
         <strong>{selectedPoint.id.toUpperCase()}</strong>
         <span>

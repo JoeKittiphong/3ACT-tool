@@ -17,6 +17,7 @@ function App() {
     isConfigured,
     signInWithEmail,
     signOut,
+    resetPassword,
   } = useSupabaseAuth()
 
   const {
@@ -103,6 +104,19 @@ function App() {
     }
   }
 
+  const handleResetPassword = async (email) => {
+    setAuthError('')
+    setAuthMessage('')
+    try {
+      const { error } = await resetPassword(email)
+      if (error) throw error
+      setAuthMessage('ส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลของคุณแล้ว (โปรดเช็กกล่องจดหมาย หรือ Junk/Spam)')
+    } catch (error) {
+      console.error('Password reset failed', error)
+      setAuthError(error.message || 'ส่งลิงก์ไม่สำเร็จ กรุณาลองใหม่')
+    }
+  }
+
   const copySynopsis = async () => {
     if (!synopsis.trim()) return
 
@@ -153,6 +167,7 @@ function App() {
     return (
       <AuthScreen
         onSubmit={handleEmailSignIn}
+        onResetPassword={handleResetPassword}
         loading={authLoading}
         errorMessage={authError}
         infoMessage={authMessage}

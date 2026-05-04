@@ -141,10 +141,13 @@ export function EditorWorkspace({
         selectedPoint={selectedPoint}
         completedCount={completedCount}
         totalPoints={totalPoints}
+        syncStatus={syncStatus}
+        isCloudMode={isCloudMode}
         onOpenOutline={onOpenOutline}
         onOpenSettings={onOpenSettings}
         onOpenLibrary={onOpenLibrary}
         onOpenReader={onOpenReader}
+        onSignOut={onSignOut}
       />
     </>
   )

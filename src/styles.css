@@ -22,6 +22,7 @@
   --shadow: 6px 6px 0 #0b0d12;
   --shadow-small: 4px 4px 0 #0b0d12;
   --radius: 22px;
+  --mobile-bottom-bar-height: 152px;
 }
 
 * {
@@ -309,6 +310,8 @@ button {
 
 .editor-card {
   background: linear-gradient(180deg, #202734 0%, #181d26 100%);
+  display: flex;
+  flex-direction: column;
 }
 
 .editor-strip {
@@ -368,6 +371,7 @@ button {
 
 .point-editor {
   min-height: 360px;
+  flex: 1;
 }
 
 .editor-footer {
@@ -685,7 +689,7 @@ button {
   .app-shell,
   .reader-shell {
     width: min(100% - 8px, 1480px);
-    padding: 8px 0 calc(94px + env(safe-area-inset-bottom));
+    padding: 8px 0 calc(var(--mobile-bottom-bar-height) + 18px + env(safe-area-inset-bottom));
   }
 
   .hero {
@@ -711,6 +715,10 @@ button {
     min-height: auto;
     padding: 12px;
     border-radius: 16px;
+  }
+
+  .editor-card {
+    min-height: calc(100dvh - var(--mobile-bottom-bar-height) - 28px - env(safe-area-inset-bottom));
   }
 
   .editor-strip {
@@ -746,9 +754,28 @@ button {
 
   .point-editor,
   .reader-output {
-    min-height: 68vh;
+    min-height: 0;
+    height: auto;
+    max-height: none;
     border-radius: 16px;
     padding: 12px 14px;
+  }
+
+  .point-editor {
+    resize: none;
+    overflow-y: auto;
+  }
+
+  .editor-footer {
+    margin-top: 8px;
+  }
+
+  .char-count {
+    font-size: 0.74rem;
+  }
+
+  .char-recommend {
+    display: none;
   }
 
   .editor-card::after {
@@ -833,6 +860,44 @@ button {
     border-radius: 20px;
     background: #1b212b;
     box-shadow: 5px 5px 0 #0b0d12;
+  }
+
+  .mobile-cloud-tools {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mobile-sync-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border: 3px solid var(--line);
+    border-radius: 999px;
+    box-shadow: 3px 3px 0 #0b0d12;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #1b1712;
+    background: var(--blue);
+  }
+
+  .mobile-sync-pill.syncing {
+    background: var(--yellow);
+  }
+
+  .mobile-sync-pill.synced {
+    background: var(--green);
+  }
+
+  .mobile-sync-pill.error {
+    background: var(--pink);
+  }
+
+  .mobile-signout-button {
+    padding: 7px 10px;
+    font-size: 0.72rem;
+    white-space: nowrap;
   }
 
   .mobile-bottom-status {

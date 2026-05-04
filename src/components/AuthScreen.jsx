@@ -4,7 +4,7 @@ import { Card } from './ui/Card.jsx'
 import { PageHeader } from './ui/PageHeader.jsx'
 import { TextField } from './ui/TextField.jsx'
 
-export function AuthScreen({ onSubmit, loading, errorMessage, infoMessage }) {
+export function AuthScreen({ onSubmit, onResetPassword, loading, errorMessage, infoMessage }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -40,9 +40,20 @@ export function AuthScreen({ onSubmit, loading, errorMessage, infoMessage }) {
           />
           {infoMessage ? <p className="auth-message">{infoMessage}</p> : null}
           {errorMessage ? <p className="auth-message error">{errorMessage}</p> : null}
-          <Button variant="primary" type="submit" disabled={loading || !email.trim() || !password.trim()}>
-            {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ / สมัครสมาชิก'}
-          </Button>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+            <Button style={{ flex: 1 }} variant="primary" type="submit" disabled={loading || !email.trim() || !password.trim()}>
+              {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ / สมัครสมาชิก'}
+            </Button>
+            <Button 
+              style={{ flex: 1 }}
+              variant="secondary" 
+              type="button" 
+              onClick={() => onResetPassword(email.trim())} 
+              disabled={loading || !email.trim()}
+            >
+              ลืมรหัสผ่าน? (ส่งลิงก์รีเซ็ต)
+            </Button>
+          </div>
         </form>
       </Card>
     </div>
