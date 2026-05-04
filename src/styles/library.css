@@ -30,6 +30,20 @@
   gap: 10px;
   align-items: center;
   margin-bottom: 8px;
+  min-width: 0;
+}
+
+.library-title-badge {
+  min-width: 0;
+  max-width: calc(100% - 58px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  justify-content: flex-start;
+}
+
+.library-progress-badge {
+  flex: 0 0 auto;
 }
 
 .library-item strong {
@@ -65,4 +79,42 @@
   padding: 0;
   font-size: 0.9rem;
   line-height: 1;
+}
+
+@media (max-width: 640px) {
+  .library-item {
+    padding: 10px 36px 10px 10px;
+  }
+
+  .library-item-top {
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .library-title-badge {
+    max-width: calc(100% - 52px);
+    padding: 5px 10px;
+    font-size: 0.74rem;
+  }
+
+  .library-progress-badge {
+    padding: 5px 9px;
+    font-size: 0.72rem;
+  }
+
+  .library-item strong {
+    font-size: 0.86rem;
+  }
+
+  .library-item p {
+    font-size: 0.76rem;
+  }
+
+  .library-delete-button {
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    font-size: 0.82rem;
+  }
 }

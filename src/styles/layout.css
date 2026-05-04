@@ -129,6 +129,17 @@
   min-height: 60vh;
 }
 
+.library-card,
+.synopsis-reader-card,
+.storyline-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.library-grid {
+  min-height: 0;
+}
+
 @media (max-width: 1180px) {
   .workspace {
     grid-template-columns: 260px minmax(0, 1fr);

@@ -23,4 +23,8 @@
   --shadow-small: 4px 4px 0 #0b0d12;
   --radius: 22px;
   --mobile-bottom-bar-height: 152px;
+  --mobile-top-ratio: 90svh;
+  --mobile-bottom-ratio: 10svh;
+  --editor-mobile-top-ratio: 80svh;
+  --editor-mobile-bottom-ratio: 20svh;
 }

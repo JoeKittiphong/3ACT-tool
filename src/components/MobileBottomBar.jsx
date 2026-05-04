@@ -1,4 +1,3 @@
-import { useBottomBarHeight } from '../hooks/useBottomBarHeight.js'
 import { Button } from './ui/Button.jsx'
 
 export function MobileBottomBar({
@@ -21,10 +20,8 @@ export function MobileBottomBar({
     error: 'Error',
   }
 
-  const barRef = useBottomBarHeight()
-
   return (
-    <div ref={barRef} className="mobile-bottom-bar">
+    <div className="mobile-bottom-bar">
       <div className="mobile-cloud-tools">
         <span className={`mobile-sync-pill ${syncStatus ?? 'local'}`}>
           {isCloudMode ? syncLabelMap[syncStatus] ?? 'Syncing' : 'Local mode'}

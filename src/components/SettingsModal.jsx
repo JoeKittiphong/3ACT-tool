@@ -12,6 +12,7 @@ export function SettingsModal({ isOpen, project, onClose, onCreateNew, onFieldCh
       title="ตั้งค่าเรื่องย่อ"
       description="กำหนดข้อมูลตั้งต้นของเรื่องก่อน แล้วค่อยลงรายละเอียดในแต่ละ point"
       onClose={onClose}
+      className="mobile-action-modal"
       contentClassName="field-grid"
       actions={
         <div className="modal-actions desktop-modal-actions">
@@ -30,6 +31,9 @@ export function SettingsModal({ isOpen, project, onClose, onCreateNew, onFieldCh
           </Button>
           <Button variant="primary" className="mobile-settings-button" onClick={onClose}>
             บันทึก
+          </Button>
+          <Button variant="secondary" className="mobile-settings-button" onClick={onClose}>
+            ปิด
           </Button>
         </div>
       }
